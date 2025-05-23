@@ -1,3 +1,117 @@
+/* Stili per la navbar verticale personalizzata */
+.custom-nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  position: relative;
+  z-index: 1030;
+}
+
+.custom-nav-list li {
+  position: relative;
+  margin-bottom: 15px;
+  border-radius: 30px;
+  transition: all 0.5s ease;
+  width: 60px;
+  height: 60px;
+  background: white;
+  overflow: hidden;
+}
+
+.nav-link-custom {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  text-decoration: none;
+  position: relative;
+}
+
+.custom-nav-list li:hover {
+  width: 250px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  z-index: 1100;
+}
+
+.icon {
+  min-width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  position: relative;
+  z-index: 2;
+}
+
+/* Gradiente che appare durante l'hover */
+.custom-nav-list li::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60px;
+  height: 100%;
+  background: linear-gradient(45deg, var(--i), var(--j));
+  border-radius: 30px;
+  transition: all 0.5s ease;
+  opacity: 0;
+  z-index: 1;
+}
+
+.custom-nav-list li:hover::before {
+  opacity: 1;
+  width: 100%;
+}
+
+/* Effetto di luce */
+.custom-nav-list li::after {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 0;
+  width: 60px;
+  height: 100%;
+  background: linear-gradient(45deg, var(--i), var(--j));
+  filter: blur(15px);
+  opacity: 0;
+  transition: all 0.5s ease;
+  z-index: 0;
+  border-radius: 30px;
+}
+
+.custom-nav-list li:hover::after {
+  opacity: 0.5;
+  width: 100%;
+}
+
+.title {
+  white-space: nowrap;
+  color: #333; /* Colore normale */
+  padding-left: 15px;
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: all 0.3s ease;
+  z-index: 2;
+  font-weight: 500;
+}
+
+.custom-nav-list li:hover .title {
+  opacity: 1;
+  transform: translateX(0);
+  transition-delay: 0.2s;
+  color: white; /* Colore durante hover */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); /* Migliora leggibilità */
+}
+
+/* Stili per la versione mobile */
+@media (max-width: 991.98px) {
+  .navbar-vertical {
+    display: none;
+  }
+}
+
+/* Navbar verticale */
 .navbar-vertical {
   width: 100px;
   position: fixed;
@@ -6,16 +120,9 @@
   padding: 0.5rem;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
   z-index: 1030;
-}
-
-.navbar-vertical .nav-link {
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-  margin-bottom: 0.25rem;
-}
-
-.navbar-vertical .nav-link:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background: white;
+  height: 100vh;
+  overflow: visible;
 }
 
 @media (min-width: 765px) {
