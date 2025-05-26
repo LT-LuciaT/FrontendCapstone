@@ -1,4 +1,3 @@
-/* Stili per la navbar verticale personalizzata */
 .custom-nav-list {
   list-style: none;
   padding: 0;
@@ -31,6 +30,7 @@
   width: 250px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   z-index: 1100;
+  background: linear-gradient(45deg, #232324, #474747);
 }
 
 .icon {
@@ -42,42 +42,13 @@
   border-radius: 50%;
   position: relative;
   z-index: 2;
-}
 
-/* Gradiente che appare durante l'hover */
-.custom-nav-list li::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 60px;
-  height: 100%;
-  background: linear-gradient(45deg, var(--i), var(--j));
-  border-radius: 30px;
-  transition: all 0.5s ease;
-  opacity: 0;
-  z-index: 1;
+  transition: all 0.3s ease;
 }
 
 .custom-nav-list li:hover::before {
   opacity: 1;
   width: 100%;
-}
-
-/* Effetto di luce */
-.custom-nav-list li::after {
-  content: "";
-  position: absolute;
-  top: 10px;
-  left: 0;
-  width: 60px;
-  height: 100%;
-  background: linear-gradient(45deg, var(--i), var(--j));
-  filter: blur(15px);
-  opacity: 0;
-  transition: all 0.5s ease;
-  z-index: 0;
-  border-radius: 30px;
 }
 
 .custom-nav-list li:hover::after {
@@ -87,7 +58,7 @@
 
 .title {
   white-space: nowrap;
-  color: #333; /* Colore normale */
+  color: #333;
   padding-left: 15px;
   opacity: 0;
   transform: translateX(-20px);
@@ -100,18 +71,15 @@
   opacity: 1;
   transform: translateX(0);
   transition-delay: 0.2s;
-  color: white; /* Colore durante hover */
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); /* Migliora leggibilità */
+  color: white;
 }
 
-/* Stili per la versione mobile */
 @media (max-width: 991.98px) {
   .navbar-vertical {
     display: none;
   }
 }
 
-/* Navbar verticale */
 .navbar-vertical {
   width: 100px;
   position: fixed;
@@ -127,6 +95,47 @@
 
 @media (min-width: 765px) {
   body {
-    padding-left: 270px;
+    padding-left: 8em;
   }
+}
+
+/* search bar */
+
+.search-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  width: 100%;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  left: 15px;
+  width: 20px;
+  height: 20px;
+  fill: #777;
+}
+
+.search-input {
+  width: 100%;
+  padding: 5px 20px 5px 45px;
+  border: 2px solid #e0e0e0;
+  border-radius: 30px;
+  font-size: 16px;
+  transition: all 0.3s;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.search-input:focus {
+  border-color: #222222;
+  outline: none;
+  box-shadow: 0 2px 10px #8d8d8d;
 }
