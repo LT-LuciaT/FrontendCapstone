@@ -1,7 +1,13 @@
 import { useState } from "react";
 
-function SearchBar() {
+function SearchBar({ onSearch }) {
   const [query, setQuery] = useState("");
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      onSearch(query);
+    }
+  };
 
   return (
     <div className="search-container">
@@ -13,6 +19,7 @@ function SearchBar() {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="Cerca..."
           className="search-input d-flex justify-content-center"
         />
