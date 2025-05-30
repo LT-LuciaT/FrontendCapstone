@@ -1,47 +1,54 @@
 import { Navbar, Nav, Container } from "react-bootstrap";
+import { Link, NavLink } from "react-router-dom";
 
 const MyNavBar = () => {
   const navItems = [
-    { id: 1, title: "Home", colors: { i: "#a955ff", j: "#ea51ff" } },
-    { id: 2, title: "Categories", colors: { i: "#56ccf2", j: "#2f80ed" } },
-    { id: 3, title: "MyMoods", colors: { i: "#f2994a", j: "#f2c94c" } },
-    { id: 4, title: "News", colors: { i: "#eb5757", j: "#000000" } },
+    { id: 1, title: "Home", path: "/" },
+    { id: 2, title: "Categories", path: "/categories" },
+    { id: 3, title: "MyMoods", path: "/mymoods" },
+    { id: 4, title: "News", path: "/news" },
   ];
 
   return (
     <>
-      {/* Navbar per mobile (orizzontale) */}
+      {/* Mobile Navbar */}
       <Navbar bg="light" expand="md" className="d-md-none">
         <Container>
-          <Navbar.Brand href="#home" className="">
+          <Navbar.Brand as={Link} to="/">
             La Mia App
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar" />
           <Navbar.Collapse id="responsive-navbar">
-            <Nav className="me-auto ">
-              <Nav.Link href="#home">Home</Nav.Link>
-              <Nav.Link href="#categories">Categories</Nav.Link>
-              <Nav.Link href="#mymoods">MyMoods</Nav.Link>
-              <Nav.Link href="#news">News</Nav.Link>
+            <Nav className="me-auto">
+              {navItems.map((item) => (
+                <Nav.Link
+                  as={NavLink}
+                  to={item.path}
+                  key={item.id}
+                  className={({ isActive }) => (isActive ? "active" : "")}
+                >
+                  {item.title}
+                </Nav.Link>
+              ))}
             </Nav>
           </Navbar.Collapse>
         </Container>
       </Navbar>
 
-      {/* Navbar per desktop (verticale) - versione personalizzata */}
+      {/* Desktop Navbar */}
       <Navbar bg="light" className="d-none d-md-flex vh-100 navbar-vertical">
         <Container fluid className="flex-column h-100 p-0">
-          <Navbar.Brand href="#home" className="mb-4 ps-3">
+          <Navbar.Brand as={Link} to="/" className="mb-4 ps-3">
             La Mia App
           </Navbar.Brand>
           <Nav className="flex-column w-100 px-3">
             <ul className="custom-nav-list">
               {navItems.map((item) => (
-                <li key={item.id} style={{ "--i": item.colors.i, "--j": item.colors.j }}>
-                  <a href={`#${item.title.toLowerCase()}`} className="nav-link-custom">
+                <li key={item.id}>
+                  <NavLink to={item.path} className={({ isActive }) => `nav-link-custom ${isActive ? "active" : ""}`}>
                     <span className="icon"></span>
                     <span className="title">{item.title}</span>
-                  </a>
+                  </NavLink>
                 </li>
               ))}
             </ul>

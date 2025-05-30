@@ -1,57 +1,65 @@
-import { useState, useEffect } from "react";
-import SearchBar from "./SearchBar";
+import { useState, useEffect, useCallback } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { useNavigate } from "react-router-dom";
 
 function Home() {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [query, setQuery] = useState("nature");
+  const [query] = useState("nature");
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
   const API_KEY = "4PyLSwqUOM1IZ3vjlveQwmzID6zvBxPOZMIBF4zxFblcI9MsrDQ29FwX";
   const BASE_URL = "https://api.pexels.com/v1/";
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchImages = async () => {
+  const fetchImages = useCallback(
+    async (reset = false) => {
       try {
-        setLoading(true);
-        let url;
-
-        if (query.trim() === "") {
-          url = `${BASE_URL}curated?per_page=15`;
-        } else {
-          url = `${BASE_URL}search?query=${query}&per_page=15`;
-        }
+        const currentPage = reset ? 1 : page;
+        const url = query
+          ? `${BASE_URL}search?query=${query}&page=${currentPage}&per_page=15`
+          : `${BASE_URL}curated?page=${currentPage}&per_page=15`;
 
         const response = await fetch(url, {
-          headers: {
-            Authorization: API_KEY,
-          },
+          headers: { Authorization: API_KEY },
         });
 
-        if (!response.ok) {
-          throw new Error("Errore nel fetch delle immagini");
-        }
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
         const data = await response.json();
-        setImages(data.photos);
+        const newImages = data.photos.map((photo) => ({
+          ...photo,
+          src: { ...photo.src, original: photo.src.original || photo.src.large },
+        }));
+
+        setImages((prev) => (reset ? newImages : [...prev, ...newImages]));
+        setPage(currentPage + 1);
+        setHasMore(data.photos.length === 15);
       } catch (err) {
+        console.error("Fetch error:", err);
         setError(err.message);
+        setHasMore(false);
       } finally {
         setLoading(false);
       }
-    };
+    },
+    [query, page]
+  );
 
-    fetchImages();
+  useEffect(() => {
+    fetchImages(true);
   }, [query]);
 
-  const handleSearch = (searchTerm) => {
-    setQuery(searchTerm);
-  };
+  useEffect(() => {
+    fetchImages(true);
+  }, [query, fetchImages]);
 
-  if (loading) {
+  if (loading && images.length === 0) {
     return (
       <div className="d-flex justify-content-center mt-5">
-        <div className="spinner-border" role="status">
+        <div className="spinner-border text-primary" role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
       </div>
@@ -61,30 +69,57 @@ function Home() {
   if (error) {
     return (
       <div className="alert alert-danger mt-3" role="alert">
-        Errore: {error}
+        Error: {error}
       </div>
     );
   }
 
   return (
-    <div className="container mt-4">
-      <SearchBar onSearch={handleSearch} />
-
-      {/* griglia di immagini */}
-      <div className="row">
-        {images.map((image) => (
-          <div key={image.id} className="col-md-4 mb-4">
-            <div className="card h-100">
+    <div className="app-container" id="scrollableDiv" style={{ height: "100vh", overflow: "auto" }}>
+      <InfiniteScroll
+        dataLength={images.length}
+        next={fetchImages}
+        hasMore={hasMore}
+        loader={
+          <div className="text-center py-4">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        }
+        endMessage={
+          <p className="text-center py-4 text-muted">
+            {images.length > 0 ? "Hai visto tutte le immagini!" : "Nessun risultato trovato"}
+          </p>
+        }
+        scrollableTarget="scrollableDiv"
+      >
+        <div className="image-grid">
+          {images.map((image) => (
+            <div
+              key={image.id}
+              className="card"
+              onClick={() => navigate(`/photo/${image.id}`)}
+              style={{ cursor: "pointer" }}
+            >
               <img
                 src={image.src.medium}
                 className="card-img-top"
-                alt={image.photographer}
-                style={{ height: "250px", objectFit: "cover" }}
+                alt={image.alt || `Foto di ${image.photographer}`}
+                loading="lazy"
               />
+              <div className="card-body">
+                <p className="card-text">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="me-1">
+                    <path d="M12 2a5 5 0 1 0 5 5 5 5 0 0 0-5-5zm0 8a3 3 0 1 1 3-3 3 3 0 0 1-3 3zm9 11v-1a7 7 0 0 0-7-7h-4a7 7 0 0 0-7 7v1z"></path>
+                  </svg>
+                  {image.photographer}
+                </p>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </InfiniteScroll>
     </div>
   );
 }
