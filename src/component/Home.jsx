@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useNavigate } from "react-router-dom";
+import SearchBar from "./SearchBar";
 
 function Home() {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [query] = useState("nature");
+  const [query, setQuery] = useState("nature");
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
@@ -17,6 +18,7 @@ function Home() {
   const fetchImages = useCallback(
     async (reset = false) => {
       try {
+        setLoading(true);
         const currentPage = reset ? 1 : page;
         const url = query
           ? `${BASE_URL}search?query=${query}&page=${currentPage}&per_page=15`
@@ -36,7 +38,7 @@ function Home() {
 
         setImages((prev) => (reset ? newImages : [...prev, ...newImages]));
         setPage(currentPage + 1);
-        setHasMore(data.photos.length === 15);
+        setHasMore(data.photos.length > 0);
       } catch (err) {
         console.error("Fetch error:", err);
         setError(err.message);
@@ -48,13 +50,15 @@ function Home() {
     [query, page]
   );
 
-  useEffect(() => {
-    fetchImages(true);
-  }, [query]);
+  const handleSearch = (searchQuery) => {
+    setQuery(searchQuery);
+    setPage(1);
+    setImages([]);
+  };
 
   useEffect(() => {
     fetchImages(true);
-  }, [query, fetchImages]);
+  }, [query]);
 
   if (loading && images.length === 0) {
     return (
@@ -75,51 +79,52 @@ function Home() {
   }
 
   return (
-    <div className="app-container" id="scrollableDiv" style={{ height: "100vh", overflow: "auto" }}>
-      <InfiniteScroll
-        dataLength={images.length}
-        next={fetchImages}
-        hasMore={hasMore}
-        loader={
-          <div className="text-center py-4">
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        }
-        endMessage={
-          <p className="text-center py-4 text-muted">
-            {images.length > 0 ? "Hai visto tutte le immagini!" : "Nessun risultato trovato"}
-          </p>
-        }
-        scrollableTarget="scrollableDiv"
-      >
-        <div className="image-grid">
-          {images.map((image) => (
-            <div
-              key={image.id}
-              className="card"
-              onClick={() => navigate(`/photo/${image.id}`)}
-              style={{ cursor: "pointer" }}
-            >
-              <img
-                src={image.src.medium}
-                className="card-img-top"
-                alt={image.alt || `Foto di ${image.photographer}`}
-                loading="lazy"
-              />
-              <div className="card-body">
-                <p className="card-text">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="me-1">
-                    <path d="M12 2a5 5 0 1 0 5 5 5 5 0 0 0-5-5zm0 8a3 3 0 1 1 3-3 3 3 0 0 1-3 3zm9 11v-1a7 7 0 0 0-7-7h-4a7 7 0 0 0-7 7v1z"></path>
-                  </svg>
-                  {image.photographer}
-                </p>
+    <div className="app-container">
+      <SearchBar onSearch={handleSearch} />
+
+      <div className="scroll-container" id="scrollableDiv">
+        <InfiniteScroll
+          dataLength={images.length}
+          next={fetchImages}
+          hasMore={hasMore}
+          loader={
+            <div className="text-center py-4">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
               </div>
             </div>
-          ))}
-        </div>
-      </InfiniteScroll>
+          }
+          endMessage={
+            <p className="text-center py-4 text-muted">
+              {images.length > 0 ? "You've seen all images!" : "No results found"}
+            </p>
+          }
+          scrollableTarget="scrollableDiv"
+        >
+          <div className="image-grid">
+            {images.map((image) => (
+              <div key={image.id} className="card" onClick={() => navigate(`/photo/${image.id}`)}>
+                <div className="card-img-container">
+                  <img
+                    src={image.src.medium}
+                    className="card-img-top"
+                    alt={image.alt || `Photo by ${image.photographer}`}
+                    loading="lazy"
+                  />
+                </div>
+                <div className="card-body">
+                  <p className="card-text">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="me-1">
+                      <path d="M12 2a5 5 0 1 0 5 5 5 5 0 0 0-5-5zm0 8a3 3 0 1 1 3-3 3 3 0 0 1-3 3zm9 11v-1a7 7 0 0 0-7-7h-4a7 7 0 0 0-7 7v1z"></path>
+                    </svg>
+                    {image.photographer}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </InfiniteScroll>
+      </div>
     </div>
   );
 }
