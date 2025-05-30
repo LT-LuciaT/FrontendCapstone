@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import MyNavBar from "./component/MyNavBar";
 import Home from "./component/Home";
 import ImgPage from "./component/ImgPage";
+import Categorie from "./component/Categorie";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <MyNavBar />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/categories" element={<Categorie />} />
         <Route path="/photo/:id" element={<ImgPage />} />
       </Routes>
     </Router>
