@@ -15,7 +15,7 @@ const MyNavBar = () => {
       <Navbar bg="light" expand="md" className="d-md-none">
         <Container>
           <Navbar.Brand as={Link} to="/">
-            La Mia App
+            ARTKIVE
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar" />
           <Navbar.Collapse id="responsive-navbar">
@@ -39,7 +39,7 @@ const MyNavBar = () => {
       <Navbar bg="light" className="d-none d-md-flex vh-100 navbar-vertical">
         <Container fluid className="flex-column h-100 p-0">
           <Navbar.Brand as={Link} to="/" className="mb-4 ps-3">
-            La Mia App
+            ARTKIVE
           </Navbar.Brand>
           <Nav className="flex-column w-100 px-3">
             <ul className="custom-nav-list">
