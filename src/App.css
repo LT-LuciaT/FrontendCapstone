@@ -403,3 +403,53 @@ body,
   margin-bottom: 1rem;
   flex: 1;
 }
+
+/* Stili per il salvataggio immagini */
+.card {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-img-container {
+  position: relative;
+}
+
+.card-img-container:hover {
+  opacity: 0.9;
+}
+
+/* Stili per il lightbox personalizzato */
+.yarl__button_delete {
+  z-index: 1;
+}
+
+.yarl__button_delete:hover {
+  background: rgba(255, 0, 0, 0.7) !important;
+}
+
+/* Stili per la grid */
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+
+@media (max-width: 768px) {
+  .image-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
+
+/* Stili per i bottoni di azione */
+.btn-action {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.card:hover .btn-action {
+  opacity: 1;
+}

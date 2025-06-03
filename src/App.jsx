@@ -7,6 +7,8 @@ import ImgPage from "./component/ImgPage";
 import Categorie from "./component/Categorie";
 import News from "./component/News";
 import NewsPage from "./component/Newspage";
+import MyMood from "./component/MyMood";
+import BoardDetail from "./component/BoardDetail";
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/categories" element={<Categorie />} />
+        <Route path="/mymoods" element={<MyMood />} />
+        <Route path="/board/:id" element={<BoardDetail />} />
         <Route path="/news" element={<News />} />
         <Route path="/news/:id" element={<NewsPage />} />
         <Route path="/photo/:id" element={<ImgPage />} />

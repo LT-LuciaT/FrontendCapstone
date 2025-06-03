@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useNavigate } from "react-router-dom";
 import SearchBar from "./SearchBar";
+import { Button, Modal, Form } from "react-bootstrap";
 
 function Home() {
   const [images, setImages] = useState([]);
@@ -10,10 +11,21 @@ function Home() {
   const [query, setQuery] = useState("nature");
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [boards, setBoards] = useState([]);
+  const [newBoardName, setNewBoardName] = useState("");
+  const [selectedBoard, setSelectedBoard] = useState("");
 
   const API_KEY = "4PyLSwqUOM1IZ3vjlveQwmzID6zvBxPOZMIBF4zxFblcI9MsrDQ29FwX";
   const BASE_URL = "https://api.pexels.com/v1/";
   const navigate = useNavigate();
+
+  // Carica le board dal localStorage
+  useEffect(() => {
+    const savedBoards = JSON.parse(localStorage.getItem("pinterest-boards")) || [];
+    setBoards(savedBoards);
+  }, []);
 
   const fetchImages = useCallback(
     async (reset = false) => {
@@ -54,6 +66,63 @@ function Home() {
     setQuery(searchQuery);
     setPage(1);
     setImages([]);
+  };
+
+  const handleSaveImage = (image) => {
+    setSelectedImage(image);
+    setShowSaveModal(true);
+  };
+
+  // Crea una nuova board
+  const createNewBoard = () => {
+    if (!newBoardName.trim()) return;
+
+    const newBoard = {
+      id: Date.now(),
+      title: newBoardName.trim(),
+      coverImage: selectedImage.src.medium,
+      images: [selectedImage],
+      pinCount: 1,
+    };
+
+    const updatedBoards = [...boards, newBoard];
+    setBoards(updatedBoards);
+    localStorage.setItem("pinterest-boards", JSON.stringify(updatedBoards));
+    setNewBoardName("");
+    setSelectedBoard(newBoard.id);
+  };
+
+  const addImageToBoard = () => {
+    if (!selectedBoard) return;
+
+    const updatedBoards = boards.map((board) => {
+      if (board.id === Number(selectedBoard)) {
+        const imageExists = board.images.some((img) => img.id === selectedImage.id);
+
+        if (!imageExists) {
+          return {
+            ...board,
+            images: [...board.images, selectedImage],
+            pinCount: board.images.length + 1,
+            coverImage: board.coverImage || selectedImage.src.medium,
+          };
+        }
+      }
+      return board;
+    });
+
+    setBoards(updatedBoards);
+    localStorage.setItem("pinterest-boards", JSON.stringify(updatedBoards));
+    setShowSaveModal(false);
+  };
+
+  const saveImage = () => {
+    if (selectedBoard) {
+      addImageToBoard();
+    } else if (newBoardName.trim()) {
+      createNewBoard();
+    }
+    setShowSaveModal(false);
   };
 
   useEffect(() => {
@@ -103,8 +172,8 @@ function Home() {
         >
           <div className="image-grid">
             {images.map((image) => (
-              <div key={image.id} className="card" onClick={() => navigate(`/photo/${image.id}`)}>
-                <div className="card-img-container">
+              <div key={image.id} className="card">
+                <div className="card-img-container" onClick={() => navigate(`/photo/${image.id}`)}>
                   <img
                     src={image.src.medium}
                     className="card-img-top"
@@ -112,19 +181,70 @@ function Home() {
                     loading="lazy"
                   />
                 </div>
-                <div className="card-body">
-                  <p className="card-text">
+                <div className="card-body d-flex justify-content-between align-items-center">
+                  <p className="card-text mb-0">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="me-1">
                       <path d="M12 2a5 5 0 1 0 5 5 5 5 0 0 0-5-5zm0 8a3 3 0 1 1 3-3 3 3 0 0 1-3 3zm9 11v-1a7 7 0 0 0-7-7h-4a7 7 0 0 0-7 7v1z"></path>
                     </svg>
                     {image.photographer}
                   </p>
+                  <button
+                    className="btn btn-sm btn-outline-primary"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSaveImage(image);
+                    }}
+                  >
+                    Save
+                  </button>
                 </div>
               </div>
             ))}
           </div>
         </InfiniteScroll>
       </div>
+
+      {/* Modal */}
+      <Modal show={showSaveModal} onHide={() => setShowSaveModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Save to board</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>Select a board</Form.Label>
+              <Form.Select value={selectedBoard} onChange={(e) => setSelectedBoard(e.target.value)}>
+                <option value="">Choose a board...</option>
+                {boards.map((board) => (
+                  <option key={board.id} value={board.id}>
+                    {board.title} ({board.pinCount})
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+
+            <div className="text-center my-2">OR</div>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Create new board</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Board name"
+                value={newBoardName}
+                onChange={(e) => setNewBoardName(e.target.value)}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowSaveModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={saveImage}>
+            Save
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }
