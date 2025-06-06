@@ -1,7 +1,7 @@
 import { Navbar, Nav, Container } from "react-bootstrap";
 import { Link, NavLink } from "react-router-dom";
 
-const MyNavBar = () => {
+const MyNavBar = ({ isAuthenticated, onLogout }) => {
   const navItems = [
     { id: 1, title: "Home", path: "/" },
     { id: 2, title: "Categories", path: "/categories" },
@@ -31,6 +31,17 @@ const MyNavBar = () => {
                 </Nav.Link>
               ))}
             </Nav>
+            <Nav>
+              {isAuthenticated ? (
+                <Nav.Link onClick={onLogout} className="text-danger">
+                  Logout
+                </Nav.Link>
+              ) : (
+                <Nav.Link as={Link} to="/login" className="text-primary">
+                  Login
+                </Nav.Link>
+              )}
+            </Nav>
           </Navbar.Collapse>
         </Container>
       </Navbar>
@@ -51,6 +62,22 @@ const MyNavBar = () => {
                   </NavLink>
                 </li>
               ))}
+              <li>
+                {isAuthenticated ? (
+                  <button
+                    onClick={onLogout}
+                    className="nav-link-custom text-danger border-0 bg-transparent w-100 text-start"
+                  >
+                    <span className="icon"></span>
+                    <span className="title">Logout</span>
+                  </button>
+                ) : (
+                  <NavLink to="/login" className={({ isActive }) => `nav-link-custom ${isActive ? "active" : ""}`}>
+                    <span className="icon"></span>
+                    <span className="title">Login</span>
+                  </NavLink>
+                )}
+              </li>
             </ul>
           </Nav>
         </Container>

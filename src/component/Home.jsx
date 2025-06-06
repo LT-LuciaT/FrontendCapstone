@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import SearchBar from "./SearchBar";
 import { Button, Modal, Form } from "react-bootstrap";
 
-function Home() {
+function Home(isAuthenticated) {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -69,6 +69,10 @@ function Home() {
   };
 
   const handleSaveImage = (image) => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
     setSelectedImage(image);
     setShowSaveModal(true);
   };

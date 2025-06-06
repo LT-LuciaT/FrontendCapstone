@@ -72,6 +72,7 @@ const DraggableImage = ({ image, isInMoodboard = true, onClick, onRemove, onResi
           height: "100%",
           objectFit: "cover",
           borderRadius: "4px",
+          pointerEvents: "none",
         }}
       />
       {isInMoodboard && (
@@ -89,11 +90,11 @@ const DraggableImage = ({ image, isInMoodboard = true, onClick, onRemove, onResi
       )}
     </div>
   );
+
   return isInMoodboard ? (
     <div
       ref={(node) => drag(drop(node))}
       style={{
-        position: "absolute",
         left: image.left,
         top: image.top,
         width: image.width,
