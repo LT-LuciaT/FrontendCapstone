@@ -38,7 +38,7 @@ const MyMood = () => {
           {boards.map((board) => (
             <Col key={board.id} xs={12} sm={6} md={4} lg={3}>
               <Card className="h-100 shadow-sm">
-                <Link to={`/board/${board.id}`} className="text-decoration-none">
+                <Link to={`/mymoods/board/${board.id}`} className="text-decoration-none">
                   <Card.Img
                     variant="top"
                     src={board.coverImage}

@@ -65,6 +65,9 @@ const BoardDetail = () => {
         <Link to="/mymoods" className="btn btn-outline-secondary">
           Back to Boards
         </Link>
+        <Link to={`/mymoods/${id}/moodboard`} state={{ images: board.images }} className="btn btn-primary">
+          Create Moodboard
+        </Link>
       </div>
 
       {board.images.length === 0 ? (

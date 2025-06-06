@@ -9,6 +9,7 @@ import News from "./component/News";
 import NewsPage from "./component/Newspage";
 import MyMood from "./component/MyMood";
 import BoardDetail from "./component/BoardDetail";
+import MoodboardPage from "./component/MoodboardPage";
 
 function App() {
   return (
@@ -18,7 +19,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/categories" element={<Categorie />} />
         <Route path="/mymoods" element={<MyMood />} />
-        <Route path="/board/:id" element={<BoardDetail />} />
+        <Route path="/mymoods/board/:id" element={<BoardDetail />} />
+        <Route path="/mymoods/:id/moodboard" element={<MoodboardPage />} />
         <Route path="/news" element={<News />} />
         <Route path="/news/:id" element={<NewsPage />} />
         <Route path="/photo/:id" element={<ImgPage />} />
