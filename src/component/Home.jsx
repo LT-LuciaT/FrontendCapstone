@@ -76,10 +76,10 @@ function Home({ isAuthenticated }) {
   };
 
   const handleSaveImage = (image) => {
-    if (!isAuthenticated) {
-      navigate("/login");
-      return;
-    }
+    // if (!isAuthenticated) {
+    //   navigate("/login");
+    //   return;
+    // }
     setSelectedImage(image);
     setShowSaveModal(true);
   };
