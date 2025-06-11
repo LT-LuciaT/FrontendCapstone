@@ -1,12 +1,13 @@
 import { Navbar, Nav, Container } from "react-bootstrap";
 import { Link, NavLink } from "react-router-dom";
+import { House, ListUl, Palette, Newspaper, BoxArrowInRight, BoxArrowRight } from "react-bootstrap-icons";
 
 const MyNavBar = ({ isAuthenticated, onLogout }) => {
   const navItems = [
-    { id: 1, title: "Home", path: "/" },
-    { id: 2, title: "Categories", path: "/categories" },
-    { id: 3, title: "MyMoods", path: "/mymoods" },
-    { id: 4, title: "News", path: "/news" },
+    { id: 1, title: "Home", path: "/", icon: <House className="me-2 text-black" /> },
+    { id: 2, title: "Categories", path: "/categories", icon: <ListUl className="me-2 text-black" /> },
+    { id: 3, title: "MyMoods", path: "/mymoods", icon: <Palette className="me-2 text-black" /> },
+    { id: 4, title: "News", path: "/news", icon: <Newspaper className="me-2 text-black" /> },
   ];
 
   return (
@@ -27,6 +28,7 @@ const MyNavBar = ({ isAuthenticated, onLogout }) => {
                   key={item.id}
                   className={({ isActive }) => (isActive ? "active" : "")}
                 >
+                  {item.icon}
                   {item.title}
                 </Nav.Link>
               ))}
@@ -34,10 +36,12 @@ const MyNavBar = ({ isAuthenticated, onLogout }) => {
             <Nav>
               {isAuthenticated ? (
                 <Nav.Link onClick={onLogout} className="text-danger">
+                  <BoxArrowRight className="me-2" />
                   Logout
                 </Nav.Link>
               ) : (
                 <Nav.Link as={Link} to="/login" className="text-primary">
+                  <BoxArrowInRight className="me-2" />
                   Login
                 </Nav.Link>
               )}
@@ -57,7 +61,7 @@ const MyNavBar = ({ isAuthenticated, onLogout }) => {
               {navItems.map((item) => (
                 <li key={item.id}>
                   <NavLink to={item.path} className={({ isActive }) => `nav-link-custom ${isActive ? "active" : ""}`}>
-                    <span className="icon"></span>
+                    <span className="icon">{item.icon}</span>
                     <span className="title">{item.title}</span>
                   </NavLink>
                 </li>
@@ -68,12 +72,16 @@ const MyNavBar = ({ isAuthenticated, onLogout }) => {
                     onClick={onLogout}
                     className="nav-link-custom text-danger border-0 bg-transparent w-100 text-start"
                   >
-                    <span className="icon"></span>
+                    <span className="icon">
+                      <BoxArrowRight className="me-2" />
+                    </span>
                     <span className="title">Logout</span>
                   </button>
                 ) : (
                   <NavLink to="/login" className={({ isActive }) => `nav-link-custom ${isActive ? "active" : ""}`}>
-                    <span className="icon"></span>
+                    <span className="icon">
+                      <BoxArrowInRight className="me-2 text-black" />
+                    </span>
                     <span className="title">Login</span>
                   </NavLink>
                 )}

@@ -84,7 +84,7 @@ function News() {
     <div className="app-container">
       <SearchBar onSearch={handleSearch} />
 
-      <div className="scroll-container" id="scrollableDiv">
+      <div className="scroll-container">
         <InfiniteScroll
           dataLength={articles.length}
           next={fetchArticles}
@@ -101,7 +101,6 @@ function News() {
               {articles.length > 0 ? "You've seen all news!" : "No news articles found"}
             </p>
           }
-          scrollableTarget="scrollableDiv"
         >
           <div className="news-grid">
             {articles.map((article) => (

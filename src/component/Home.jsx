@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import SearchBar from "./SearchBar";
 import { Button, Modal, Form } from "react-bootstrap";
 
-function Home(isAuthenticated) {
+function Home({ isAuthenticated }) {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -21,20 +21,24 @@ function Home(isAuthenticated) {
   const BASE_URL = "https://api.pexels.com/v1/";
   const navigate = useNavigate();
 
-  // Carica le board dal localStorage
   useEffect(() => {
     const savedBoards = JSON.parse(localStorage.getItem("pinterest-boards")) || [];
     setBoards(savedBoards);
   }, []);
 
   const fetchImages = useCallback(
-    async (reset = false) => {
+    async (reset = false, pageToFetch = 1) => {
       try {
-        setLoading(true);
-        const currentPage = reset ? 1 : page;
+        if (reset) {
+          setLoading(true);
+          setImages([]);
+          setPage(1);
+          setHasMore(true);
+        }
+
         const url = query
-          ? `${BASE_URL}search?query=${query}&page=${currentPage}&per_page=15`
-          : `${BASE_URL}curated?page=${currentPage}&per_page=15`;
+          ? `${BASE_URL}search?query=${query}&page=${pageToFetch}&per_page=15`
+          : `${BASE_URL}curated?page=${pageToFetch}&per_page=15`;
 
         const response = await fetch(url, {
           headers: { Authorization: API_KEY },
@@ -43,14 +47,18 @@ function Home(isAuthenticated) {
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
         const data = await response.json();
+
+        console.log("Data ricevuta:", data);
         const newImages = data.photos.map((photo) => ({
           ...photo,
           src: { ...photo.src, original: photo.src.original || photo.src.large },
         }));
 
         setImages((prev) => (reset ? newImages : [...prev, ...newImages]));
-        setPage(currentPage + 1);
         setHasMore(data.photos.length > 0);
+        if (!reset) {
+          setPage((prevPage) => prevPage + 1);
+        }
       } catch (err) {
         console.error("Fetch error:", err);
         setError(err.message);
@@ -59,13 +67,12 @@ function Home(isAuthenticated) {
         setLoading(false);
       }
     },
-    [query, page]
+    [query]
   );
 
   const handleSearch = (searchQuery) => {
     setQuery(searchQuery);
-    setPage(1);
-    setImages([]);
+    fetchImages(true, 1);
   };
 
   const handleSaveImage = (image) => {
@@ -77,7 +84,6 @@ function Home(isAuthenticated) {
     setShowSaveModal(true);
   };
 
-  // Crea una nuova board
   const createNewBoard = () => {
     if (!newBoardName.trim()) return;
 
@@ -130,8 +136,8 @@ function Home(isAuthenticated) {
   };
 
   useEffect(() => {
-    fetchImages(true);
-  }, [query]);
+    fetchImages(true, 1);
+  }, []);
 
   if (loading && images.length === 0) {
     return (
@@ -155,10 +161,10 @@ function Home(isAuthenticated) {
     <div className="app-container">
       <SearchBar onSearch={handleSearch} />
 
-      <div className="scroll-container" id="scrollableDiv">
+      <div className="scroll-container">
         <InfiniteScroll
           dataLength={images.length}
-          next={fetchImages}
+          next={() => fetchImages(false, page + 1)}
           hasMore={hasMore}
           loader={
             <div className="text-center py-4">
@@ -172,7 +178,6 @@ function Home(isAuthenticated) {
               {images.length > 0 ? "You've seen all images!" : "No results found"}
             </p>
           }
-          scrollableTarget="scrollableDiv"
         >
           <div className="image-grid">
             {images.map((image) => (
@@ -208,7 +213,6 @@ function Home(isAuthenticated) {
         </InfiniteScroll>
       </div>
 
-      {/* Modal */}
       <Modal show={showSaveModal} onHide={() => setShowSaveModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Save to board</Modal.Title>
